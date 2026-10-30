@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+<html lang="uk">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Brainrot Arena</title>
+
+<style>
+
+*{box-sizing:border-box}
+
+body{margin:0;background:#0c0a19;color:white;font-family:Arial;text-align:center}
+
+header{background:#171326;padding:22px;border-bottom:2px solid #ff8a21}
+
+h1{color:#ff922e;margin:0;font-size:28px}
+
+main{padding:18px}
+
+.panel{background:#211b36;border:1px solid #514269;border-radius:15px;padding:18px;margin:18px 0}
+
+.coins{color:#ffcf55;font-size:23px;font-weight:bold}
+
+button{background:#ff8a21;color:#160d0a;border:0;border-radius:10px;padding:15px 24px;font-size:17px;font-weight:bold}
+
+button:disabled{opacity:.5}
+
+.character{font-size:75px;margin:20px}
+
+.small{color:#c4b8d9}
+
+#collection{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+.item{background:#322749;padding:12px;border-radius:10px;font-size:25px}
+
+</style>
+
+</head>
+
+<body>
+
+<header><h1>🧠 BRAINROT ARENA</h1></header>
+
+<main>
+
+<div class="panel">
+
+<div class="coins">🪙 <span id="coins">500</span></div>
+
+<p class="small">Твої віртуальні монети</p>
+
+</div>
+
+<div class="panel">
+
+<h2>🎁 Безкоштовний кейс</h2>
+
+<div class="character" id="character">📦</div>
+
+<p id="result">Відкрий кейс та отримай персонажа!</p>
+
+<button id="open" onclick="openCase()">ВІДКРИТИ КЕЙС</button>
+
+<p class="small">Один кейс кожні 30 секунд</p>
+
+</div>
+
+<div class="panel">
+
+<h2>🏆 Моя колекція</h2>
+
+<div id="collection">Поки порожньо</div>
+
+</div>
+
+</main>
+
+<script>
+
+const heroes=[
+
+["🐸","Жабка"],["🐱","Котик"],
+
+["🦈","Акула"],["🦄","Єдиноріг"],
+
+["🐉","Дракон"]
+
+];
+
+let owned=JSON.parse(localStorage.getItem("owned")||"[]");
+
+let coins=Number(localStorage.getItem("coins")||500);
+
+let next=Number(localStorage.getItem("next")||0);
+
+function render(){
+
+document.getElementById("coins").textContent=coins;
+
+document.getElementById("collection").innerHTML=
+
+owned.length?owned.map(x=>'<div class="item">'+x[0]+'<br><small>'+x[1]+'</small></div>').join(""):"Поки порожньо";
+
+let wait=Math.ceil((next-Date.now())/1000);
+
+document.getElementById("open").disabled=wait>0;
+
+document.getElementById("open").textContent=wait>0?"Зачекай "+wait+" с":"ВІДКРИТИ КЕЙС";
+
+}
+
+function openCase(){
+
+if(Date.now()<next)return;
+
+let hero=heroes[Math.floor(Math.random()*heroes.length)];
+
+owned.push(hero);
+
+coins+=25;
+
+next=Date.now()+30000;
+
+localStorage.setItem("owned",JSON.stringify(owned));
+
+localStorage.setItem("coins",coins);
+
+localStorage.setItem("next",next);
+
+document.getElementById("character").textContent=hero[0];
+
+document.getElementById("result").textContent="Тобі випав "+hero[1]+"! +25 монет";
+
+render();
+
+}
+
+render();
+
+setInterval(render,1000);
+</script>
+
+</body>
+
+</html>
